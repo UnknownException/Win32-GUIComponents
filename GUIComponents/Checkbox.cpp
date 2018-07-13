@@ -29,6 +29,9 @@ void Checkbox::SetCheck(bool s)
 
 bool Checkbox::Create()
 {
+	if (!RegisterControls())
+		return false;
+
 	if (GetParent() == nullptr)
 		return false;
 

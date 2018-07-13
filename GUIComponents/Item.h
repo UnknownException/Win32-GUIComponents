@@ -25,6 +25,12 @@ public:
 	decltype(size) GetSize() { return size; }
 	void SetSize(decltype(size) s) { size = s; }
 
+	void SetVisible(bool b);
+	void SetEnabled(bool b);
+
 	virtual bool Create() = 0;
 	bool IsSame(HWND hWnd) { return self == hWnd; }
+
+protected:
+	static bool RegisterControls();
 };

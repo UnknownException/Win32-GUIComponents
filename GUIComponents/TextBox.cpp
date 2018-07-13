@@ -77,6 +77,9 @@ void TextBox::FocusBottom()
 
 bool TextBox::Create()
 {
+	if (!RegisterControls())
+		return false;
+
 	if (GetParent() == nullptr)
 		return false;
 
@@ -85,6 +88,8 @@ bool TextBox::Create()
 		dwStyle = dwStyle | ES_MULTILINE;
 	if (verticalScroll)
 		dwStyle = dwStyle | WS_VSCROLL;
+	if (readOnly)
+		dwStyle = dwStyle | ES_READONLY;
 
 	SetSelf(CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, dwStyle, GetPosition().x, GetPosition().y, 
 				GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));

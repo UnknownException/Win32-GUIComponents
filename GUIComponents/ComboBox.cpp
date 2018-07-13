@@ -62,6 +62,9 @@ int ComboBox::GetCount()
 
 bool ComboBox::Create()
 {
+	if (!RegisterControls())
+		return false;
+
 	if (GetParent() == nullptr)
 		return false;
 
