@@ -15,12 +15,14 @@ Item::~Item()
 
 void Item::SetVisible(bool b)
 {
-	ShowWindow(self, b ? SW_SHOWDEFAULT : SW_HIDE);
+	if(self)
+		ShowWindow(self, b ? SW_SHOWDEFAULT : SW_HIDE);
 }
 
 void Item::SetEnabled(bool b)
 {
-	EnableWindow(self, b);
+	if(self)
+		EnableWindow(self, b);
 }
 
 bool Item::RegisterControls()

@@ -5,6 +5,10 @@ Window::Window()
 {
 	SetClassname(L"WindowClass");
 	SetTitle(L"WindowTitle");
+
+	resizable = true;
+	minimizable = true;
+	maximizable = true;
 }
 
 Window::~Window()
@@ -37,7 +41,15 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow)
 
 	RegisterClassExW(&wcex);
 
-	SetSelf(CreateWindowW(GetClassname(), GetTitle(), WS_OVERLAPPEDWINDOW,
+	DWORD windowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
+	if (resizable)
+		windowStyle |= WS_THICKFRAME;
+	if(minimizable)
+		windowStyle |= WS_MINIMIZEBOX;
+	if(maximizable)
+		windowStyle |= WS_MAXIMIZEBOX;
+
+	SetSelf(CreateWindowW(GetClassname(), GetTitle(), windowStyle,
 				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, nullptr, nullptr, hInstance, nullptr));
 
 	if (!GetSelf())
