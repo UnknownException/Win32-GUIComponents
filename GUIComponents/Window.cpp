@@ -1,19 +1,19 @@
 #include "stdafx.h"
 #include "Window.h"
 
-
 Window::Window()
 {
-	self = nullptr;
-
 	SetClassname(L"WindowClass");
 	SetTitle(L"WindowTitle");
 }
 
 Window::~Window()
 {
-	if (self)
-		DestroyWindow(self);
+}
+
+bool Window::Create()
+{
+	return Create(GetModuleHandle(NULL), SW_SHOWDEFAULT);
 }
 
 bool Window::Create(HINSTANCE hInstance, int nCmdShow)
@@ -25,34 +25,34 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow)
 	wcex.style = CS_HREDRAW | CS_VREDRAW;
 	wcex.lpfnWndProc = Window::StaticProcedure;
 	wcex.cbClsExtra = 0;
-	wcex.cbWndExtra = sizeof(Window*);
+	wcex.cbWndExtra = sizeof(Window*); // For 'this' pointer in StaticProcedure
 	wcex.hInstance = hInstance;
 	wcex.hIcon = NULL;
 	wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+	wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW);
 	wcex.lpszMenuName = NULL;
 	wcex.lpszClassName = GetClassname();
 	wcex.hIconSm = NULL;
 
 	RegisterClassExW(&wcex);
 
-	self = CreateWindowW(GetClassname(), GetTitle(), WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr, hInstance, nullptr);
+	SetSelf(CreateWindowW(GetClassname(), GetTitle(), WS_OVERLAPPEDWINDOW,
+				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, nullptr, nullptr, hInstance, nullptr));
 
-	if (!self)
+	if (!GetSelf())
 		return false;
 
-	SetWindowLongPtr(self, 0, (LONG)this);
+	SetWindowLongPtr(GetSelf(), 0, (LONG)this);
 
-	ShowWindow(self, nCmdShow);
-	UpdateWindow(self);
+	ShowWindow(GetSelf(), nCmdShow);
+	UpdateWindow(GetSelf());
 
-	return true;
+	return true;;
 }
 
 bool Window::Initialize()
 {
-	if (!self)
+	if (!GetSelf())
 		return false;
 
 	return true;
@@ -60,7 +60,7 @@ bool Window::Initialize()
 
 bool Window::Update()
 {
-	if (!self)
+	if (!GetSelf())
 		return false;
 
 	return true;

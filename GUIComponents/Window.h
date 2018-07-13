@@ -1,15 +1,12 @@
 #pragma once
+#include "Item.h"
 
-class Window {
-	HWND self;
+class Window : public Item {
 	LPCWSTR classname;
 	LPCWSTR title;
 public:
 	Window();
 	virtual ~Window();
-
-protected:
-	HWND GetSelf() { return self; }
 
 public:
 	LPCWSTR GetClassname() { return classname; }
@@ -18,6 +15,7 @@ public:
 	LPCWSTR GetTitle() { return title; }
 	void SetTitle(LPCWSTR t) { title = t; }
 
+	bool Create() override;
 	virtual bool Create(HINSTANCE hInstance, int nCmdShow);
 	virtual bool Initialize();
 	virtual bool Update();
