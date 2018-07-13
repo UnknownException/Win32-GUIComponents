@@ -18,9 +18,14 @@ public:
 	void SetText(LPCWSTR string);
 	void AppendText(LPCWSTR string);
 
+	bool GetMultiLine() { return multiLine; }
 	void SetMultiLine(bool b) { multiLine = b; }
+
+	bool GetVerticalScroll() { return verticalScroll; }
 	void SetVerticalScroll(bool b) { verticalScroll = b; }
-	void SetReadOnly(bool b) { readOnly = b; }
+
+	bool GetReadOnly() { return readOnly; }
+	void SetReadOnly(bool b);
 
 	void FocusBottom();
 

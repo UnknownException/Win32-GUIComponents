@@ -68,6 +68,14 @@ void TextBox::AppendText(LPCWSTR string)
 	delete[] appended;
 }
 
+void TextBox::SetReadOnly(bool b)
+{
+	readOnly = b;
+
+	if (GetSelf())
+		SendMessage(GetSelf(), EM_SETREADONLY, readOnly, 0);
+}
+
 void TextBox::FocusBottom()
 {
 	SendMessage(GetSelf(), EM_SETSEL, 0, -1); // Select
@@ -85,11 +93,11 @@ bool TextBox::Create()
 
 	DWORD dwStyle = WS_VISIBLE | WS_CHILD | ES_LEFT | ES_AUTOVSCROLL;
 	if (multiLine)
-		dwStyle = dwStyle | ES_MULTILINE;
+		dwStyle |= ES_MULTILINE;
 	if (verticalScroll)
-		dwStyle = dwStyle | WS_VSCROLL;
+		dwStyle |= WS_VSCROLL;
 	if (readOnly)
-		dwStyle = dwStyle | ES_READONLY;
+		dwStyle |= ES_READONLY;
 
 	SetSelf(CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, dwStyle, GetPosition().x, GetPosition().y, 
 				GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
