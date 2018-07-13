@@ -33,7 +33,7 @@ bool Checkbox::Create()
 		return false;
 
 	SetSelf(CreateWindowEx(NULL, L"BUTTON", GetText(), WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 
-								GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
+				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
 
 	if (GetSelf())
 		SetCheck(preCheck);

@@ -65,13 +65,13 @@ bool ComboBox::Create()
 	if (GetParent() == nullptr)
 		return false;
 
-	SetSelf(CreateWindowEx(NULL, L"COMBOBOX", L"", WS_VISIBLE | WS_CHILD | WS_OVERLAPPED | CBS_DROPDOWN | CBS_HASSTRINGS, 
-								GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
+	SetSelf(CreateWindowEx(NULL, L"COMBOBOX", L"", WS_VISIBLE | WS_CHILD | WS_OVERLAPPED | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS,
+				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
 
 	for (auto it = preStrings.begin(); it != preStrings.end(); ++it)
 		AddString(*(it));
 
-	if (preSelection > 0 && preSelection < preStrings.size())
+	if (preSelection >= 0 && preSelection < static_cast<int>(preStrings.size()))
 		SetSelection(preSelection);
 
 	ClearPreSelection();
