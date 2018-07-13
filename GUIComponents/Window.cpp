@@ -9,6 +9,7 @@ Window::Window()
 
 Window::~Window()
 {
+	SetWindowLongPtr(GetSelf(), 0, (LONG)nullptr);
 }
 
 bool Window::Create()
@@ -47,7 +48,7 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow)
 	ShowWindow(GetSelf(), nCmdShow);
 	UpdateWindow(GetSelf());
 
-	return true;;
+	return true;
 }
 
 bool Window::Initialize()
