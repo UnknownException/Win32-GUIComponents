@@ -9,10 +9,13 @@ class Item {
 	WCHAR* title;
 
 	DWORD style;
-	bool border;
 
 	Vector2<int> position;
 	Vector2<int> size;
+
+	bool border;
+	bool visible;
+	bool enabled;
 public:
 	Item();
 	virtual ~Item();
@@ -43,7 +46,10 @@ public:
 	decltype(size) GetSize() { return size; }
 	void SetSize(decltype(size) s) { size = s; }
 
+	bool GetVisible() { return visible; }
 	void SetVisible(bool b);
+
+	bool GetEnabled() { return enabled; }
 	void SetEnabled(bool b);
 
 	bool IsSame(HWND hWnd) { return self == hWnd; }

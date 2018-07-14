@@ -10,7 +10,10 @@ Item::Item()
 	SetTitle(L"");
 
 	SetStyle(0);
+
 	SetBorder(false);
+	SetVisible(true);
+	SetEnabled(true);
 }
 
 Item::~Item()
@@ -50,12 +53,16 @@ void Item::SetTitle(LPCWSTR t)
 
 void Item::SetVisible(bool b)
 {
+	visible = b;
+
 	if(GetSelf())
 		ShowWindow(GetSelf(), b ? SW_SHOWDEFAULT : SW_HIDE);
 }
 
 void Item::SetEnabled(bool b)
 {
+	enabled = b;
+
 	if(GetSelf())
 		EnableWindow(GetSelf(), b);
 }
@@ -73,6 +80,9 @@ bool Item::Create(HINSTANCE hInstance)
 
 	SetSelf(CreateWindowEx(GetBorder() ? WS_EX_CLIENTEDGE : NULL, GetClassname(), GetTitle(), GetStyle(),
 		GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, hInstance, NULL));
+
+	SetVisible(GetVisible());
+	SetEnabled(GetEnabled());
 
 	if (!AfterCreate())
 		return false;
