@@ -3,6 +3,9 @@
 
 NumericBox::NumericBox()
 {
+	SetClassname(L"msctls_updown32");
+	SetStyle(WS_VISIBLE | WS_CHILD | UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK);
+
 	textBox = nullptr;
 }
 
@@ -12,24 +15,22 @@ NumericBox::~NumericBox()
 		delete textBox;
 }
 
-bool NumericBox::Create()
+/*
+	Creates a Text Box before the Up Down Control is made
+	The Up Down Control will bind to this Text Box
+*/
+bool NumericBox::BeforeCreate()
 {
-	if (!RegisterControls())
-		return false;
-
-	if (GetParent() == nullptr)
-		return false;
-
 	textBox = new TextBox();
 	textBox->SetParent(GetParent());
 	textBox->SetPosition(GetPosition());
 	textBox->SetSize(GetSize());
 	textBox->SetReadOnly(true);
-	if (!textBox->Create())
-		return false;
 
-	SetSelf(CreateWindowEx(NULL, L"msctls_updown32", L"", WS_VISIBLE | WS_CHILD | UDS_AUTOBUDDY | UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_ARROWKEYS | UDS_HOTTRACK,
-		GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
+	return textBox->Create();
+}
 
-	return GetSelf() != nullptr;
+bool NumericBox::AfterCreate()
+{
+	return true;
 }

@@ -3,7 +3,9 @@
 
 Checkbox::Checkbox()
 {
-	SetText(L"Button");
+	SetClassname(L"BUTTON");
+	SetStyle(WS_VISIBLE | WS_CHILD | BS_CHECKBOX);
+
 	SetCheck(false);
 }
 
@@ -27,19 +29,15 @@ void Checkbox::SetCheck(bool s)
 		preCheck = s;
 }
 
-bool Checkbox::Create()
+bool Checkbox::BeforeCreate()
 {
-	if (!RegisterControls())
-		return false;
+	return true;
+}
 
-	if (GetParent() == nullptr)
-		return false;
-
-	SetSelf(CreateWindowEx(NULL, L"BUTTON", GetText(), WS_VISIBLE | WS_CHILD | BS_CHECKBOX, 
-				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
-
+bool Checkbox::AfterCreate()
+{
 	if (GetSelf())
 		SetCheck(preCheck);
 
-	return GetSelf() != nullptr;
+	return true;
 }

@@ -19,5 +19,7 @@ public:
 
 	int GetCount();
 
-	bool Create() override;
+private:
+	bool BeforeCreate() override;
+	bool AfterCreate() override;
 };

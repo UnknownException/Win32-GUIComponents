@@ -29,7 +29,9 @@ public:
 
 	void FocusBottom();
 
-	bool Create() override;
-
 	const LPCWSTR GetNewLine() { return L"\r\n"; }
+
+private:
+	bool BeforeCreate() override;
+	bool AfterCreate() override;
 };

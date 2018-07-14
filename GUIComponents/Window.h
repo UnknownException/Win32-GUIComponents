@@ -2,23 +2,17 @@
 #include "Item.h"
 
 class Window : public Item {
-	LPCWSTR classname;
-	LPCWSTR title;
-
 	bool resizable;
 	bool minimizable;
 	bool maximizable;
+
+	HINSTANCE hInstance;
+	int cmdShow;
 public:
 	Window();
 	virtual ~Window();
 
 public:
-	LPCWSTR GetClassname() { return classname; }
-	void SetClassname(LPCWSTR c) { classname = c; }
-
-	LPCWSTR GetTitle() { return title; }
-	void SetTitle(LPCWSTR t) { title = t; }
-
 	bool GetResizable() { return resizable; }
 	void SetResizable(bool b) { resizable = b; }
 
@@ -28,8 +22,12 @@ public:
 	bool GetMaximizable() { return maximizable; }
 	void SetMaximizable(bool b) { maximizable = b; }
 
-	bool Create() override;
-	virtual bool Create(HINSTANCE hInstance, int nCmdShow);
+private:
+	bool BeforeCreate() override;
+	bool AfterCreate() override;
+
+public:
+	bool Create(HINSTANCE hInstance, int nCmdShow);
 	virtual bool Initialize();
 	virtual bool Update();
 

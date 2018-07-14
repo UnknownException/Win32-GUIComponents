@@ -2,17 +2,18 @@
 #include "Item.h"
 
 class Checkbox : public Item {
-	LPCWSTR text;
 	bool preCheck;
 public:
 	Checkbox();
 	virtual ~Checkbox();
 
-	LPCWSTR GetText() { return text; }
-	void SetText(LPCWSTR t) { text = t; }
+	LPCWSTR GetText() { return GetTitle(); }
+	void SetText(LPCWSTR str) { SetTitle(str); }
 
 	bool GetCheck();
 	void SetCheck(bool s);
 
-	bool Create() override;
+private:
+	bool BeforeCreate() override;
+	bool AfterCreate() override;
 };

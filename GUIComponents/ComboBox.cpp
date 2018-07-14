@@ -3,6 +3,9 @@
 
 ComboBox::ComboBox()
 {
+	SetClassname(L"COMBOBOX");
+	SetStyle(WS_VISIBLE | WS_CHILD | WS_OVERLAPPED | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS);
+
 	preSelection = -1;
 }
 
@@ -60,17 +63,13 @@ int ComboBox::GetCount()
 	return preStrings.size();
 }
 
-bool ComboBox::Create()
+bool ComboBox::BeforeCreate()
 {
-	if (!RegisterControls())
-		return false;
+	return true;
+}
 
-	if (GetParent() == nullptr)
-		return false;
-
-	SetSelf(CreateWindowEx(NULL, L"COMBOBOX", L"", WS_VISIBLE | WS_CHILD | WS_OVERLAPPED | WS_VSCROLL | CBS_DROPDOWN | CBS_HASSTRINGS,
-				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
-
+bool ComboBox::AfterCreate()
+{
 	for (auto it = preStrings.begin(); it != preStrings.end(); ++it)
 		AddString(*(it));
 
@@ -79,5 +78,5 @@ bool ComboBox::Create()
 
 	ClearPreSelection();
 
-	return GetSelf() != nullptr;
+	return true;
 }

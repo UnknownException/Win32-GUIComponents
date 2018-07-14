@@ -8,5 +8,7 @@ public:
 	NumericBox();
 	virtual ~NumericBox();
 
-	bool Create() override;
+private:
+	bool BeforeCreate() override;
+	bool AfterCreate() override;
 };

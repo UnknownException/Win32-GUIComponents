@@ -3,8 +3,14 @@
 
 TextBox::TextBox()
 {
-	multiLine = false;
-	verticalScroll = false;
+	SetClassname(L"EDIT");
+	SetStyle(WS_VISIBLE | WS_CHILD | ES_LEFT | ES_AUTOVSCROLL);
+	SetBorder(true);
+
+	SetMultiLine(false);
+	SetVerticalScroll(false);
+	SetReadOnly(false);
+
 	text = nullptr;
 }
 
@@ -83,14 +89,8 @@ void TextBox::FocusBottom()
 	SendMessage(GetSelf(), EM_SCROLLCARET, 0, 0); // Set caret
 }
 
-bool TextBox::Create()
+bool TextBox::BeforeCreate()
 {
-	if (!RegisterControls())
-		return false;
-
-	if (GetParent() == nullptr)
-		return false;
-
 	DWORD dwStyle = WS_VISIBLE | WS_CHILD | ES_LEFT | ES_AUTOVSCROLL;
 	if (multiLine)
 		dwStyle |= ES_MULTILINE;
@@ -99,12 +99,16 @@ bool TextBox::Create()
 	if (readOnly)
 		dwStyle |= ES_READONLY;
 
-	SetSelf(CreateWindowEx(WS_EX_CLIENTEDGE, L"EDIT", NULL, dwStyle, GetPosition().x, GetPosition().y, 
-				GetSize().x, GetSize().y, GetParent(), NULL, NULL, NULL));
+	SetStyle(dwStyle);
 
+	return true;
+}
+
+bool TextBox::AfterCreate()
+{
 	if (text)
 		SetText(text);
 
-	return GetSelf() != nullptr;
+	return true;
 }
 

@@ -3,12 +3,12 @@
 
 Window::Window()
 {
-	SetClassname(L"WindowClass");
-	SetTitle(L"WindowTitle");
-
 	resizable = true;
 	minimizable = true;
 	maximizable = true;
+
+	hInstance = GetModuleHandle(NULL);
+	cmdShow = SW_SHOWDEFAULT;
 }
 
 Window::~Window()
@@ -16,12 +16,7 @@ Window::~Window()
 	SetWindowLongPtr(GetSelf(), 0, (LONG)nullptr);
 }
 
-bool Window::Create()
-{
-	return Create(GetModuleHandle(NULL), SW_SHOWDEFAULT);
-}
-
-bool Window::Create(HINSTANCE hInstance, int nCmdShow)
+bool Window::BeforeCreate()
 {
 	WNDCLASSEXW wcex;
 
@@ -44,23 +39,32 @@ bool Window::Create(HINSTANCE hInstance, int nCmdShow)
 	DWORD windowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
 	if (resizable)
 		windowStyle |= WS_THICKFRAME;
-	if(minimizable)
+	if (minimizable)
 		windowStyle |= WS_MINIMIZEBOX;
-	if(maximizable)
+	if (maximizable)
 		windowStyle |= WS_MAXIMIZEBOX;
 
-	SetSelf(CreateWindowW(GetClassname(), GetTitle(), windowStyle,
-				GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, nullptr, nullptr, hInstance, nullptr));
+	SetStyle(windowStyle);
 
-	if (!GetSelf())
-		return false;
+	return true;
+}
 
+bool Window::AfterCreate()
+{
 	SetWindowLongPtr(GetSelf(), 0, (LONG)this);
 
-	ShowWindow(GetSelf(), nCmdShow);
+	ShowWindow(GetSelf(), cmdShow);
 	UpdateWindow(GetSelf());
 
 	return true;
+}
+
+bool Window::Create(HINSTANCE hInst, int nCmdShow)
+{
+	hInstance = hInst;
+	cmdShow = nCmdShow;
+
+	return Item::Create(hInst);
 }
 
 bool Window::Initialize()
