@@ -29,7 +29,7 @@ public:
 		SetClassname(L"BUTTON");
 		SetStyle(WS_VISIBLE | WS_CHILD | BS_CHECKBOX);
 
-		preCheck = false;		
+		SetCheck(false);		
 	}
 	virtual ~Checkbox() {}	
 	

@@ -22,40 +22,8 @@ class Item {
 
 	Font* preFont;
 	HFONT fontInstance;
+
 public:
-	Item() {
-		SetParent(nullptr);
-		SetSelf(nullptr);
-
-		SetClassname(L"");
-		SetTitle(L"");
-
-		SetStyle(0);
-
-		SetBorder(false);
-		SetVisible(true);
-		SetEnabled(true);
-
-		preFont = nullptr;
-		fontInstance = nullptr;
-	}
-	virtual ~Item() {
-		if (self)
-			DestroyWindow(self);
-
-		if (classname)
-			delete[] classname;
-
-		if (title)
-			delete[] title;
-
-		if (preFont)
-			delete preFont;
-
-		if (fontInstance)
-			DeleteObject(fontInstance);	
-	}
-
 	HWND GetParent() { return parent; }
 	void SetParent(HWND p) { parent = p; }
 
@@ -116,14 +84,12 @@ public:
 	HFONT GetFont() { return fontInstance; }
 	void SetFont(Font* font) {
 		if (GetSelf()) {
-			if (fontInstance)
-			{
+			if (fontInstance) {
 				DeleteObject(fontInstance);
 				fontInstance = nullptr;
 			}
 
-			if (font)
-			{
+			if (font) {
 				HDC hDC = GetDC(GetSelf());
 				fontInstance = font->CreateInstance(hDC);
 				ReleaseDC(GetSelf(), hDC);
@@ -144,6 +110,40 @@ public:
 
 	bool IsSame(HWND hWnd) { return self == hWnd; }
 	bool Create() { return Create(NULL); }
+
+public:
+	Item() {
+		SetParent(nullptr);
+		SetSelf(nullptr);
+
+		SetClassname(L"");
+		SetTitle(L"");
+
+		SetStyle(0);
+
+		SetBorder(false);
+		SetVisible(true);
+		SetEnabled(true);
+
+		preFont = nullptr;
+		fontInstance = nullptr;
+	}
+	virtual ~Item() {
+		if (self)
+			DestroyWindow(self);
+
+		if (classname)
+			delete[] classname;
+
+		if (title)
+			delete[] title;
+
+		if (preFont)
+			delete preFont;
+
+		if (fontInstance)
+			DeleteObject(fontInstance);	
+	}
 
 protected:
 	virtual bool BeforeCreate() = 0; // Before HWND self is set

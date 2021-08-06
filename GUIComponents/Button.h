@@ -13,7 +13,7 @@ public:
 		SetClassname(L"BUTTON");
 		SetStyle(WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON);
 	}
-	virtual ~Button();	
+	virtual ~Button() {}
 	
 private:
 	virtual bool BeforeCreate() override { return true; }

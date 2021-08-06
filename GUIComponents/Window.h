@@ -73,8 +73,8 @@ private:
 	}
 
 public:
-	bool Create(HINSTANCE hInstance, int nCmdShow) {
-		hInstance = hInstance;
+	bool Create(HINSTANCE hInst, int nCmdShow) {
+		hInstance = hInst;
 		cmdShow = nCmdShow;
 
 		return Item::Create(hInstance);
