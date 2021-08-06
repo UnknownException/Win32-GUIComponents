@@ -26,4 +26,67 @@ struct Vector2
 
 		return result;
 	}
+
+	Vector2<T> operator-(const Vector2 val)
+	{
+		Vector2<T> result = *this;
+		result.x -= val.x;
+		result.y -= val.y;
+
+		return result;
+	}
+
+	Vector2<T> operator*(const Vector2 val)
+	{
+		Vector2<T> result = *this;
+		result.x *= val.x;
+		result.y *= val.y;
+
+		return result;
+	}
+
+	Vector2<T> operator/(const Vector2 val)
+	{
+		Vector2<T> result = *this;
+		result.x /= val.x;
+		result.y /= val.y;
+
+		return result;
+	}
+	
+	Vector2<T> operator+(const float val)
+	{
+		Vector2<T> result = *this;
+		result.x += val;
+		result.y += val;
+
+		return result;
+	}
+	
+	Vector2<T> operator-(const float val)
+	{
+		Vector2<T> result = *this;
+		result.x -= val;
+		result.y -= val;
+
+		return result;
+	}
+	
+	Vector2<T> operator*(const float val)
+	{
+		Vector2<T> result = *this;
+		result.x *= val;
+		result.y *= val;
+
+		return result;
+	}
+
+	Vector2<T> operator/(const float val)
+	{
+		Vector2<T> result = *this;
+		result.x /= val;
+		result.y /= val;
+
+		return result;
+	}
 };
