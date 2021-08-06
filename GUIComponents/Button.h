@@ -1,15 +1,21 @@
 #pragma once
-#include "Item.h"
+
+#ifndef _GUICOMPONENTS_HEADER
+	#error Must include GUIComponents.h
+#endif
 
 class Button : public Item {
 public:
-	Button();
-	virtual ~Button();
-
 	LPCWSTR GetText() { return GetTitle(); }
 	void SetText(LPCWSTR str) { SetTitle(str); }
 
+	Button() {
+		SetClassname(L"BUTTON");
+		SetStyle(WS_VISIBLE | WS_CHILD | BS_PUSHBUTTON);
+	}
+	virtual ~Button();	
+	
 private:
-	bool BeforeCreate() override;
-	bool AfterCreate() override;
+	virtual bool BeforeCreate() override { return true; }
+	virtual bool AfterCreate() override { return true; }
 };

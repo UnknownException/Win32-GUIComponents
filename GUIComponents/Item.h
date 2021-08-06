@@ -1,6 +1,8 @@
 #pragma once
-#include "Vector2.h"
-#include "Font.h"
+
+#ifndef _GUICOMPONENTS_HEADER
+	#error Must include GUIComponents.h
+#endif
 
 class Item {
 	HWND parent;
@@ -21,8 +23,38 @@ class Item {
 	Font* preFont;
 	HFONT fontInstance;
 public:
-	Item();
-	virtual ~Item();
+	Item() {
+		SetParent(nullptr);
+		SetSelf(nullptr);
+
+		SetClassname(L"");
+		SetTitle(L"");
+
+		SetStyle(0);
+
+		SetBorder(false);
+		SetVisible(true);
+		SetEnabled(true);
+
+		preFont = nullptr;
+		fontInstance = nullptr;
+	}
+	virtual ~Item() {
+		if (self)
+			DestroyWindow(self);
+
+		if (classname)
+			delete[] classname;
+
+		if (title)
+			delete[] title;
+
+		if (preFont)
+			delete preFont;
+
+		if (fontInstance)
+			DeleteObject(fontInstance);	
+	}
 
 	HWND GetParent() { return parent; }
 	void SetParent(HWND p) { parent = p; }
@@ -32,10 +64,25 @@ protected:
 	void SetSelf(HWND s) { self = s; }
 
 	LPCWSTR GetClassname() { return classname; }
-	void SetClassname(LPCWSTR c);
+	void SetClassname(LPCWSTR c) {
+		if (classname)
+			delete[] classname;
+
+		classname = new WCHAR[wcslen(c) + 1];
+		wcscpy_s(classname, wcslen(c) + 1, c);
+	}
 
 	LPCWSTR GetTitle() { return title; }
-	void SetTitle(LPCWSTR t);
+	void SetTitle(LPCWSTR t) {
+		if (title)
+			delete[] title;
+
+		title = new WCHAR[wcslen(t) + 1];
+		wcscpy_s(title, wcslen(t) + 1, t);
+
+		if (GetSelf())
+			SetWindowText(GetSelf(), title);
+	}
 
 	DWORD GetStyle() { return style; }
 	void SetStyle(DWORD dw) { style = dw; }
@@ -51,21 +98,100 @@ public:
 	void SetSize(decltype(size) s) { size = s; }
 
 	bool GetVisible() { return visible; }
-	void SetVisible(bool b);
+	void SetVisible(bool b) {
+		visible = b;
+
+		if(GetSelf())
+			ShowWindow(GetSelf(), b ? SW_SHOWDEFAULT : SW_HIDE);
+	}
 
 	bool GetEnabled() { return enabled; }
-	void SetEnabled(bool b);
+	void SetEnabled(bool b) {
+		enabled = b;
+
+		if(GetSelf())
+			EnableWindow(GetSelf(), b);
+	}
 
 	HFONT GetFont() { return fontInstance; }
-	void SetFont(Font* f);
+	void SetFont(Font* font) {
+		if (GetSelf()) {
+			if (fontInstance)
+			{
+				DeleteObject(fontInstance);
+				fontInstance = nullptr;
+			}
+
+			if (font)
+			{
+				HDC hDC = GetDC(GetSelf());
+				fontInstance = font->CreateInstance(hDC);
+				ReleaseDC(GetSelf(), hDC);
+			}
+
+			SendMessage(GetSelf(), WM_SETFONT, (WPARAM)fontInstance, (LPARAM)MAKELONG(TRUE, 0));
+		}
+		else {
+			if (preFont)
+				delete preFont;
+
+			preFont = new Font();
+			preFont->SetName(font->GetName());
+			preFont->SetSize(font->GetSize());
+			preFont->SetBold(font->GetBold());
+		}		
+	}
 
 	bool IsSame(HWND hWnd) { return self == hWnd; }
 	bool Create() { return Create(NULL); }
 
 protected:
 	virtual bool BeforeCreate() = 0; // Before HWND self is set
-	bool Create(HINSTANCE hInstance);
+	bool Create(HINSTANCE hInstance) {
+		if (!RegisterControls())
+			return false;
+
+		if (hInstance == NULL && !GetParent())
+			return false;
+
+		if (!BeforeCreate())
+			return false;
+
+		SetSelf(CreateWindowEx(GetBorder() ? WS_EX_CLIENTEDGE : NULL, GetClassname(), GetTitle(), GetStyle(),
+			GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, hInstance, NULL));
+
+		if (!GetSelf())
+			return false;
+
+		SetVisible(GetVisible());
+		SetEnabled(GetEnabled());
+		SetFont(preFont);
+
+		if (!AfterCreate())
+			return false;
+
+		return true;
+	}
 	virtual bool AfterCreate() = 0; // After HWND self is set
 
-	static bool RegisterControls();
+private:
+	static bool RegisterControls() {
+		static bool registered = false;
+		if (registered)
+			return registered;
+
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_STANDARD_CLASSES;
+		if (!InitCommonControlsEx(&icex))
+			return false;
+
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_UPDOWN_CLASS;
+		if (!InitCommonControlsEx(&icex))
+			return false;
+
+		registered = true;
+		return registered;
+	}
 };
