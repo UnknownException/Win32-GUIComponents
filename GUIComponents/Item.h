@@ -5,110 +5,96 @@
 #endif
 
 class Item {
-	HWND parent;
-	HWND self;
+	HWND _parent;
+	HWND _self;
 
-	LPWSTR classname;
-	LPWSTR title;
+	LPWSTR _classname;
+	LPWSTR _title;
 
-	DWORD style;
+	DWORD _style;
 
-	Vector2<int> position;
-	Vector2<int> size;
+	Vector2<int> _position;
+	Vector2<int> _size;
 
-	bool border;
-	bool visible;
-	bool enabled;
+	bool _border;
+	bool _visible;
+	bool _enabled;
 
-	Font* preFont;
-	HFONT fontInstance;
+	Font* _font;
 
 public:
-	HWND GetParent() { return parent; }
-	void SetParent(HWND p) { parent = p; }
+	HWND GetParent() { return _parent; }
+	void SetParent(HWND parent) { _parent = parent; }
 
 protected:
-	HWND GetSelf() { return self; }
-	void SetSelf(HWND s) { self = s; }
+	HWND GetSelf() { return _self; }
+	void SetSelf(HWND self) { _self = self; }
 
-	LPCWSTR GetClassname() { return classname; }
-	void SetClassname(LPCWSTR c) {
-		if (classname)
-			delete[] classname;
+	LPCWSTR GetClassname() { return _classname; }
+	void SetClassname(LPCWSTR classname) {
+		if (_classname)
+			delete[] _classname;
 
-		classname = new WCHAR[wcslen(c) + 1];
-		wcscpy_s(classname, wcslen(c) + 1, c);
+		_classname = new WCHAR[wcslen(classname) + 1];
+		wcscpy_s(_classname, wcslen(classname) + 1, classname);
 	}
 
-	LPCWSTR GetTitle() { return title; }
-	void SetTitle(LPCWSTR t) {
-		if (title)
-			delete[] title;
+	LPCWSTR GetTitle() { return _title; }
+	void SetTitle(LPCWSTR title) {
+		if (_title)
+			delete[] _title;
 
-		title = new WCHAR[wcslen(t) + 1];
-		wcscpy_s(title, wcslen(t) + 1, t);
+		_title = new WCHAR[wcslen(title) + 1];
+		wcscpy_s(_title, wcslen(title) + 1, title);
 
 		if (GetSelf())
-			SetWindowText(GetSelf(), title);
+			SetWindowText(GetSelf(), _title);
 	}
 
-	DWORD GetStyle() { return style; }
-	void SetStyle(DWORD dw) { style = dw; }
+	DWORD GetStyle() { return _style; }
+	void SetStyle(DWORD style) { _style = style; }
 
-	bool GetBorder() { return border; }
-	void SetBorder(bool b) { border = b; }
+	bool GetBorder() { return _border; }
+	void SetBorder(bool border) { _border = border; }
 
 public:
-	decltype(position) GetPosition() { return position; }
-	void SetPosition(decltype(position) p) { position = p; }
+	decltype(_position) GetPosition() { return _position; }
+	void SetPosition(decltype(_position) position) { _position = position; }
 
-	decltype(size) GetSize() { return size; }
-	void SetSize(decltype(size) s) { size = s; }
+	decltype(_size) GetSize() { return _size; }
+	void SetSize(decltype(_size) size) { _size = size; }
 
-	bool GetVisible() { return visible; }
-	void SetVisible(bool b) {
-		visible = b;
-
-		if(GetSelf())
-			ShowWindow(GetSelf(), b ? SW_SHOWDEFAULT : SW_HIDE);
-	}
-
-	bool GetEnabled() { return enabled; }
-	void SetEnabled(bool b) {
-		enabled = b;
+	bool GetVisible() { return _visible; }
+	void SetVisible(bool visible) {
+		_visible = visible;
 
 		if(GetSelf())
-			EnableWindow(GetSelf(), b);
+			ShowWindow(GetSelf(), _visible ? SW_SHOWDEFAULT : SW_HIDE);
 	}
 
-	HFONT GetFont() { return fontInstance; }
+	bool GetEnabled() { return _enabled; }
+	void SetEnabled(bool enabled) {
+		_enabled = enabled;
+
+		if(GetSelf())
+			EnableWindow(GetSelf(), _enabled);
+	}
+
+	Font* GetFont() { return _font; }
 	void SetFont(Font* font) {
+		_font = font;
 		if (GetSelf()) {
-			if (fontInstance) {
-				DeleteObject(fontInstance);
-				fontInstance = nullptr;
-			}
-
-			if (font) {
+			if (_font && !_font->GetInstance()) {
 				HDC hDC = GetDC(GetSelf());
-				fontInstance = font->CreateInstance(hDC);
+				_font->CreateInstance(hDC);
 				ReleaseDC(GetSelf(), hDC);
 			}
 
-			SendMessage(GetSelf(), WM_SETFONT, (WPARAM)fontInstance, (LPARAM)MAKELONG(TRUE, 0));
+			SendMessage(GetSelf(), WM_SETFONT, _font ? (WPARAM)_font->GetInstance() : NULL, (LPARAM)MAKELONG(TRUE, 0));
 		}
-		else {
-			if (preFont)
-				delete preFont;
-
-			preFont = new Font();
-			preFont->SetName(font->GetName());
-			preFont->SetSize(font->GetSize());
-			preFont->SetBold(font->GetBold());
-		}		
 	}
 
-	bool IsSame(HWND hWnd) { return self == hWnd; }
+	bool IsSame(HWND hWnd) { return _self == hWnd; }
 	bool Create() { return Create(NULL); }
 
 public:
@@ -125,24 +111,17 @@ public:
 		SetVisible(true);
 		SetEnabled(true);
 
-		preFont = nullptr;
-		fontInstance = nullptr;
+		_font = nullptr;
 	}
 	virtual ~Item() {
-		if (self)
-			DestroyWindow(self);
+		if (_self)
+			DestroyWindow(_self);
 
-		if (classname)
-			delete[] classname;
+		if (_classname)
+			delete[] _classname;
 
-		if (title)
-			delete[] title;
-
-		if (preFont)
-			delete preFont;
-
-		if (fontInstance)
-			DeleteObject(fontInstance);	
+		if (_title)
+			delete[] _title;
 	}
 
 protected:
@@ -165,7 +144,7 @@ protected:
 
 		SetVisible(GetVisible());
 		SetEnabled(GetEnabled());
-		SetFont(preFont);
+		SetFont(_font);
 
 		if (!AfterCreate())
 			return false;
