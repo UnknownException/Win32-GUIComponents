@@ -26,18 +26,22 @@ public:
 	bool GetBold() { return _bold; }
 	void SetBold(bool b) { _bold = b; }
 
-	void CreateInstance(HDC hDC) {
-		LOGFONTW lFnt;
-		ZeroMemory(&lFnt, sizeof(LOGFONTW));
+	// Don't call! Internal GUIComponents function
+	void _CreateInstance(HDC hDC) {
+		if (!_fontInstance) {
+			LOGFONTW lFnt;
+			ZeroMemory(&lFnt, sizeof(LOGFONTW));
 
-		lFnt.lfHeight = hDC ? -MulDiv(GetSize(), GetDeviceCaps(hDC, LOGPIXELSY), 72) : 0;
-		lFnt.lfWeight = GetBold() ? FW_BOLD : FW_NORMAL;
-		wcscpy_s(lFnt.lfFaceName, sizeof(lFnt.lfFaceName) / sizeof(WCHAR), GetName());
+			lFnt.lfHeight = hDC ? -MulDiv(GetSize(), GetDeviceCaps(hDC, LOGPIXELSY), 72) : 0;
+			lFnt.lfWeight = GetBold() ? FW_BOLD : FW_NORMAL;
+			wcscpy_s(lFnt.lfFaceName, sizeof(lFnt.lfFaceName) / sizeof(WCHAR), GetName());
 
-		_fontInstance = CreateFontIndirectW(&lFnt);
+			_fontInstance = CreateFontIndirectW(&lFnt);
+		}
 	}
 
-	HFONT GetInstance() { return _fontInstance; }
+	// Don't call! Internal GUIComponents function
+	HFONT _GetInstance() { return _fontInstance; }
 	
 	Font() {
 		SetName(L"");

@@ -84,13 +84,13 @@ public:
 	void SetFont(Font* font) {
 		_font = font;
 		if (GetSelf()) {
-			if (_font && !_font->GetInstance()) {
+			if (_font && !_font->_GetInstance()) {
 				HDC hDC = GetDC(GetSelf());
-				_font->CreateInstance(hDC);
+				_font->_CreateInstance(hDC);
 				ReleaseDC(GetSelf(), hDC);
 			}
 
-			SendMessage(GetSelf(), WM_SETFONT, _font ? (WPARAM)_font->GetInstance() : NULL, (LPARAM)MAKELONG(TRUE, 0));
+			SendMessage(GetSelf(), WM_SETFONT, _font ? (WPARAM)_font->_GetInstance() : NULL, (LPARAM)MAKELONG(TRUE, 0));
 		}
 	}
 
