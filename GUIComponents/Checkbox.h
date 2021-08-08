@@ -5,7 +5,7 @@
 #endif
 
 class Checkbox : public Item {
-	bool preCheck;
+	bool _checked;
 public:
 
 	LPCWSTR GetText() { return GetTitle(); }
@@ -13,15 +13,15 @@ public:
 
 	bool GetCheck() {
 		if (GetSelf() != nullptr)
-			return SendMessage(GetSelf(), BM_GETCHECK, 0, 0);
+			_checked = SendMessage(GetSelf(), BM_GETCHECK, 0, 0);
 
-		return preCheck;
+		return _checked;
 	}
-	void SetCheck(bool s) {
+	void SetCheck(bool checked) {
+		_checked = checked;
+		
 		if (GetSelf() != nullptr)
-			SendMessage(GetSelf(), BM_SETCHECK, (WPARAM)s, 0);
-		else
-			preCheck = s;
+			SendMessage(GetSelf(), BM_SETCHECK, (WPARAM)_checked, 0);
 	}
 	
 public:
@@ -35,5 +35,9 @@ public:
 	
 private:
 	virtual bool BeforeCreate() override { return true; }
-	virtual bool AfterCreate() override { return true; }	
+	virtual bool AfterCreate() override { 
+		SetCheck(_checked);
+
+		return true;
+	}	
 };
