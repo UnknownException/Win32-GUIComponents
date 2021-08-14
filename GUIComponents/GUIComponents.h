@@ -27,7 +27,7 @@
 namespace GUIComponents {
 	#include "Vector2.h"
 	#include "Font.h"
-	
+
 	#include "Item.h" //  Vector2.h, Font.h
 
 	#include "Button.h" // Item.h
@@ -36,7 +36,7 @@ namespace GUIComponents {
 	#include "TextBox.h" // Item.h
 	#include "TextLabel.h" // Item.h
 	#include "Window.h" // Item.h
-	
+
 	#include "NumericBox.h" // TextBox.h
 }
 

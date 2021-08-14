@@ -25,7 +25,7 @@ class ComboBox : public Item {
 	}
 public:
 	LPCWSTR GetString(int index) {
-		if(index < 0 || index >= _content.size())
+		if(index < 0 || index >= static_cast<int>(_content.size()))
 			return nullptr;
 		
 		return _content[index];
