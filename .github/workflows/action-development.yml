@@ -1,0 +1,69 @@
+name: Win32-GUIComponents Development
+on:
+  push:
+    branches: [ development ]
+jobs:
+  build:
+    name: Build GUIComponents
+    runs-on: windows-2019
+    steps:
+      - name: Create Timestamp
+        id: create_timestamp
+        run: $buildTime = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"; Write-Host "::set-output name=release_datestamp::$buildTime"
+        
+#https://github.com/marketplace/actions/checkout
+      - name: Check out
+        uses: actions/checkout@v2
+        with:
+          ref: development
+
+#https://github.com/marketplace/actions/setup-msbuild          
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.2
+
+      - name: Compile
+        shell: cmd
+        run: msbuild GUIComponents.sln -p:Configuration=Release -p:Platform=x86
+        
+      - name: Create all-in-one header
+        shell: cmd
+        run: |
+          cd Release
+          Builder.exe
+
+      - name: Create Zip
+        shell: powershell
+        run: |
+          Rename-Item -Path LICENSE -NewName license.txt
+          $compress = @{
+            Path = "Output/GUIComponents.h", "license.txt"
+            DestinationPath = "GUIComponents.zip"
+            Force = $True
+          }
+          Compress-Archive @compress
+
+#https://github.com/marketplace/actions/create-a-release        
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.create_timestamp.outputs.release_datestamp }}
+          release_name: Development ${{ steps.create_timestamp.outputs.release_datestamp }}
+          body: |
+            Release from development branch
+          draft: false
+          prerelease: true
+
+#https://github.com/marketplace/actions/upload-a-release-asset
+      - name: Upload Release
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./GUIComponents.zip
+          asset_name: Dev-GUIComponents-${{ steps.create_timestamp.outputs.release_datestamp }}.zip
+          asset_content_type: application/zip
