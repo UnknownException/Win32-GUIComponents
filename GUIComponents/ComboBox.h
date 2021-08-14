@@ -39,7 +39,12 @@ public:
 		_content.push_back(output);
 	}
 
-	int GetSelection() { return _selection; }
+	int GetSelection() {
+		if (GetSelf())
+			_selection = static_cast<int>(SendMessage(GetSelf(), CB_GETCURSEL, 0, 0));
+
+		return _selection;
+	}
 	void SetSelection(int index) {
 		_selection = index;
 		
