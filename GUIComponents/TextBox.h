@@ -104,7 +104,7 @@ public:
 	}
 
 private:
-	bool BeforeCreate() override {
+	bool BeforeCreate(Item* parent) override {
 		DWORD dwStyle = WS_VISIBLE | WS_CHILD | ES_AUTOVSCROLL;
 		if (multiLine)
 			dwStyle |= ES_MULTILINE;

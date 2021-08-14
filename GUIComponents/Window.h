@@ -5,45 +5,46 @@
 #endif
 
 class Window : public Item {
-	bool resizable;
-	bool minimizable;
-	bool maximizable;
+	bool _resizable;
+	bool _minimizable;
+	bool _maximizable;
 
-	HINSTANCE hInstance;
-	int cmdShow;
+	HINSTANCE _hInstance;
+	int _cmdShow;
+
 public:
-	bool GetResizable() { return resizable; }
-	void SetResizable(bool b) { resizable = b; }
+	bool GetResizable() { return _resizable; }
+	void SetResizable(bool resizable) { _resizable = resizable; }
 
-	bool GetMinimizable() { return minimizable; }
-	void SetMinimizable(bool b) { minimizable = b; }
+	bool GetMinimizable() { return _minimizable; }
+	void SetMinimizable(bool minimizable) { _minimizable = minimizable; }
 
-	bool GetMaximizable() { return maximizable; }
-	void SetMaximizable(bool b) { maximizable = b; }
+	bool GetMaximizable() { return _maximizable; }
+	void SetMaximizable(bool maximizable) { _maximizable = maximizable; }
 
 	Window() {
-		resizable = true;
-		minimizable = true;
-		maximizable = true;
+		_resizable = true;
+		_minimizable = true;
+		_maximizable = true;
 
-		hInstance = GetModuleHandle(NULL);
-		cmdShow = SW_SHOWDEFAULT;
+		_hInstance = GetModuleHandle(NULL);
+		_cmdShow = SW_SHOWDEFAULT;
 	}
 	virtual ~Window() {
 		SetWindowLongPtr(GetSelf(), 0, (LONG)nullptr);
 	}
 
 private:
-	bool BeforeCreate() override {
+	bool BeforeCreate(Item* parent) override {
 		WNDCLASSEXW wcex;
 
 		wcex.cbSize = sizeof(WNDCLASSEX);
 
 		wcex.style = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc = Window::StaticProcedure;
+		wcex.lpfnWndProc = Window::StaticProcessMessage;
 		wcex.cbClsExtra = 0;
 		wcex.cbWndExtra = sizeof(Window*); // For 'this' pointer in StaticProcedure
-		wcex.hInstance = hInstance;
+		wcex.hInstance = _hInstance;
 		wcex.hIcon = NULL;
 		wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW);
@@ -54,11 +55,11 @@ private:
 		RegisterClassExW(&wcex);
 
 		DWORD windowStyle = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU;
-		if (resizable)
+		if (_resizable)
 			windowStyle |= WS_THICKFRAME;
-		if (minimizable)
+		if (_minimizable)
 			windowStyle |= WS_MINIMIZEBOX;
-		if (maximizable)
+		if (_maximizable)
 			windowStyle |= WS_MAXIMIZEBOX;
 
 		SetStyle(windowStyle);
@@ -67,17 +68,17 @@ private:
 	bool AfterCreate() override {
 		SetWindowLongPtr(GetSelf(), 0, (LONG_PTR)this);
 
-		ShowWindow(GetSelf(), cmdShow);
+		ShowWindow(GetSelf(), _cmdShow);
 		UpdateWindow(GetSelf());
 		return true;
 	}
 
 public:
 	bool Create(HINSTANCE hInst, int nCmdShow) {
-		hInstance = hInst;
-		cmdShow = nCmdShow;
+		_hInstance = hInst;
+		_cmdShow = nCmdShow;
 
-		return Item::Create(hInstance);
+		return Item::Create(_hInstance, NULL);
 	}
 	virtual bool Initialize() {
 		if (!GetSelf())
@@ -92,21 +93,29 @@ public:
 		return true;
 	}
 
-private:
-	virtual LRESULT CALLBACK Procedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
+protected:
+	virtual bool OnMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override {
 		switch (message) {
 			case WM_DESTROY:
 				PostQuitMessage(0);
-				return 0;
+				return true;
 		}
+
+		return Item::OnMessage(hWnd, message, wParam, lParam);
+	}
+
+private:
+	LRESULT CALLBACK ProcessMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam){
+		if (OnMessage(hWnd, message, wParam, lParam))
+			return 0;
 
 		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
-	static LRESULT CALLBACK StaticProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	static LRESULT CALLBACK StaticProcessMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 		Window* window = (Window*)GetWindowLongPtr(hWnd, 0);
 		if (!window)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		else
-			return window->Procedure(hWnd, message, wParam, lParam);
+			return window->ProcessMessage(hWnd, message, wParam, lParam);
 	}
 };

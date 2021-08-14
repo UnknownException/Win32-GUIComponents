@@ -5,7 +5,6 @@
 #endif
 
 class Item {
-	HWND _parent;
 	HWND _self;
 
 	LPWSTR _classname;
@@ -22,10 +21,7 @@ class Item {
 
 	Font* _font;
 
-public:
-	HWND GetParent() { return _parent; }
-	void SetParent(HWND parent) { _parent = parent; }
-
+	std::vector<Item*> _children;
 protected:
 	HWND GetSelf() { return _self; }
 	void SetSelf(HWND self) { _self = self; }
@@ -95,11 +91,10 @@ public:
 	}
 
 	bool IsSame(HWND hWnd) { return _self == hWnd; }
-	bool Create() { return Create(NULL); }
+	bool Create(Item* parent) { return Create(NULL, parent); }
 
 public:
 	Item() {
-		SetParent(nullptr);
 		SetSelf(nullptr);
 
 		SetClassname(L"");
@@ -125,19 +120,19 @@ public:
 	}
 
 protected:
-	virtual bool BeforeCreate() = 0; // Before HWND self is set
-	bool Create(HINSTANCE hInstance) {
+	virtual bool BeforeCreate(Item* parent) = 0; // Before HWND self is set
+	bool Create(HINSTANCE hInstance, Item* parent) {
 		if (!RegisterControls())
 			return false;
 
-		if (hInstance == NULL && !GetParent())
+		if ((hInstance && parent) || (!hInstance && !parent))
 			return false;
 
-		if (!BeforeCreate())
+		if (!BeforeCreate(parent))
 			return false;
 
 		SetSelf(CreateWindowEx(GetBorder() ? WS_EX_CLIENTEDGE : NULL, GetClassname(), GetTitle(), GetStyle(),
-			GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, GetParent(), NULL, hInstance, NULL));
+			GetPosition().x, GetPosition().y, GetSize().x, GetSize().y, parent ? parent->GetSelf() : NULL, NULL, hInstance, NULL));
 
 		if (!GetSelf())
 			return false;
@@ -149,11 +144,28 @@ protected:
 		if (!AfterCreate())
 			return false;
 
+		if (parent)
+			parent->RegisterChild(this);
+
 		return true;
 	}
 	virtual bool AfterCreate() = 0; // After HWND self is set
 
+	virtual bool OnMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+		for (Item* child : _children)
+		{
+			if (child->OnMessage(hWnd, message, wParam, lParam))
+				return true;
+		}
+
+		return false;
+	}
+
 private:
+	virtual void RegisterChild(Item* child) {
+		_children.push_back(child);
+	}
+
 	static bool RegisterControls() {
 		static bool registered = false;
 		if (registered)

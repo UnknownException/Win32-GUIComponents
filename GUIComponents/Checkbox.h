@@ -34,7 +34,7 @@ public:
 	virtual ~Checkbox() {}	
 	
 private:
-	virtual bool BeforeCreate() override { return true; }
+	virtual bool BeforeCreate(Item* parent) override { return true; }
 	virtual bool AfterCreate() override { 
 		SetCheck(_checked);
 

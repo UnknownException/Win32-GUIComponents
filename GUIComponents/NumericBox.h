@@ -60,15 +60,14 @@ private:
 		Creates a Text Box before the Up Down Control is made
 		The Up Down Control will bind to this Text Box
 	*/
-	virtual bool BeforeCreate() override {
+	virtual bool BeforeCreate(Item* parent) override {
 		textBox = new TextBox();
-		textBox->SetParent(GetParent());
 		textBox->SetPosition(GetPosition());
 		textBox->SetSize(GetSize());
 		textBox->SetReadOnly(true);
 		textBox->SetTextAlignment(TextBox::ALIGNCENTER);
 
-		return textBox->Create();
+		return textBox->Create(parent);
 	}
 	virtual bool AfterCreate() override {
 		SetMin(GetMin());

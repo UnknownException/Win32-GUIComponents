@@ -60,7 +60,7 @@ public:
 	}
 	
 private:
-	virtual bool BeforeCreate() override { return true; }
+	virtual bool BeforeCreate(Item* parent) override { return true; }
 	bool AfterCreate() override {
 		for (auto it = _content.begin(); it != _content.end(); ++it)
 			AddStringToWin32Component(*it);

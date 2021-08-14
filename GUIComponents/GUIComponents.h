@@ -2,6 +2,8 @@
 #define _GUICOMPONENTS_HEADER
 
 #ifdef _GUICOMPONNENTS_HANDLELIBANDHEADERS
+	#include <SDKDDKVer.h>
+
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 

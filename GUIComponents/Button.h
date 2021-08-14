@@ -16,6 +16,6 @@ public:
 	virtual ~Button() {}
 	
 private:
-	virtual bool BeforeCreate() override { return true; }
+	virtual bool BeforeCreate(Item* parent) override { return true; }
 	virtual bool AfterCreate() override { return true; }
 };

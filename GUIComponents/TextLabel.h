@@ -36,7 +36,7 @@ public:
 	virtual ~TextLabel() {}	
 	
 private:
-	virtual bool BeforeCreate() override {
+	virtual bool BeforeCreate(Item* parent) override {
 		if(sunken)
 			SetStyle(GetStyle() | SS_SUNKEN);
 
