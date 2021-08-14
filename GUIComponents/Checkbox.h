@@ -30,14 +30,36 @@ public:
 		SetStyle(WS_VISIBLE | WS_CHILD | BS_CHECKBOX);
 
 		SetCheck(false);		
+
+		OnClick = nullptr;
 	}
 	virtual ~Checkbox() {}	
 	
+	void (*OnClick)(bool);
 private:
 	virtual bool BeforeCreate(Item* parent) override { return true; }
 	virtual bool AfterCreate() override { 
 		SetCheck(_checked);
 
 		return true;
-	}	
+	}
+
+	virtual bool OnMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override {
+		if (message != WM_COMMAND)
+			return false;
+
+		if (HIWORD(wParam) != BN_CLICKED)
+			return false;
+
+		HWND control = (HWND)lParam;
+		if (control != GetSelf())
+			return false;
+
+		SetCheck(!GetCheck());
+
+		if(OnClick)
+			OnClick(GetCheck());
+
+		return true;
+	}
 };
