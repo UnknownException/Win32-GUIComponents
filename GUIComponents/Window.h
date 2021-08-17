@@ -80,18 +80,6 @@ public:
 
 		return Item::Create(_hInstance, NULL);
 	}
-	virtual bool Initialize() {
-		if (!GetSelf())
-			return false;
-
-		return true;
-	}
-	virtual bool Update() {
-		if (!GetSelf())
-			return false;
-
-		return true;
-	}
 
 protected:
 	virtual bool OnMessage(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) override {
